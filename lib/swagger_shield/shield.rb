@@ -38,12 +38,7 @@ module SwaggerShield
             properties[param['name']] = param_schema_from(param)
           end
 
-          json_schema_path =
-            if path.start_with?('/')
-              path[1..-1]
-            else
-              path
-            end.gsub('/','\\')
+          json_schema_path = path.gsub('/','\\')
 
           paths[json_schema_path][method.upcase] = {
             'type' => 'object',

@@ -6,7 +6,7 @@ RSpec.describe SwaggerShield::Shield do
   let(:swagger_file) { File.join(__dir__, '..', 'fixtures', 'swagger.yml') }
 
   describe 'validating body params' do
-    let(:validation) { subject.validate('widgets', 'POST', params) }
+    let(:validation) { subject.validate('/widgets', 'POST', params) }
 
     context 'Given a valid object is submitted' do
       let(:params) {{ name: 'foo', price: 19999 }}
@@ -69,7 +69,7 @@ RSpec.describe SwaggerShield::Shield do
   end
 
   describe 'validating path params' do
-    let(:validation) { subject.validate('widgets/{id}', 'GET', params) }
+    let(:validation) { subject.validate('/widgets/{id}', 'GET', params) }
 
     context 'Given valid params' do
       let(:params) {{ id: 1 }}
@@ -101,7 +101,7 @@ RSpec.describe SwaggerShield::Shield do
   end
 
   describe 'validating path and body params together' do
-    let(:validation) { subject.validate('widgets/{id}', 'PUT', params) }
+    let(:validation) { subject.validate('/widgets/{id}', 'PUT', params) }
 
     context 'Given valid params' do
       let(:params) {{ id: 1, name: 'bar', price: 17999 }}
