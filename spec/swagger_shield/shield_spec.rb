@@ -99,4 +99,40 @@ RSpec.describe SwaggerShield::Shield do
       end
     end
   end
+
+  describe 'validating path and body params together' do
+    let(:validation) { subject.validate('widgets/{id}', 'PUT', params) }
+
+    context 'Given valid params' do
+      let(:params) {{ id: 1, name: 'bar', price: 17999 }}
+
+      it 'does not return an error' do
+        expect(validation).to eq([])
+      end
+    end
+
+    context 'Given an object is submitted without required keys' do
+      let(:params) {{}}
+
+      it 'returns an Array of error(s) from both sources' do
+        expect(validation).to eq([
+          "The property '#/' did not contain a required property of 'id'",
+          "The property '#/' did not contain a required property of 'name'",
+          "The property '#/' did not contain a required property of 'price'"
+        ])
+      end
+    end
+
+    context 'Given an object is submitted with improperly typed keys' do
+      let(:params) {{ id: 'string not numeric', name: 12345, price: 'what is up here' }}
+
+      it 'returns an Array of all error(s)' do
+        expect(validation).to eq([
+          "The property '#/id' of type String did not match the following type: integer",
+          "The property '#/name' of type Integer did not match the following type: string",
+          "The property '#/price' of type String did not match the following type: integer"
+        ])
+      end
+    end
+  end
 end
