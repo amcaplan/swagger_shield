@@ -155,6 +155,9 @@ definitions:
           type: "string"
       metadata:
         type: "object"
+        properties:
+          numericThing:
+            type: "number"
       created_at:
         type: "string"
         format: "date-time"

@@ -47,6 +47,16 @@ RSpec.describe SwaggerShield::Shield do
       end
     end
 
+    context 'Given an object is submitted with an Object with incorrect types' do
+      let(:params) {{ name: 'foo', price: 19999, metadata: { numericThing: 'not a number' } }}
+
+      it 'returns an Array of error(s)' do
+        expect(validation).to eq([
+          "The property '#/metadata/numericThing' of type String did not match the following type: number"
+        ])
+      end
+    end
+
     context 'Given an object is submitted with improperly formatted keys' do
       let(:params) {{ name: 'foo', price: 19999, created_at: 'not a date' }}
 
