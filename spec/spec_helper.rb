@@ -1,5 +1,10 @@
 require "bundler/setup"
+require "pry"
 require "swagger_shield"
+
+ENV['RAILS_ENV'] = 'test'
+require File.expand_path('fixtures/rails_app/config/environment', __dir__)
+require "rspec/rails"
 
 RSpec.configure do |config|
   # Enable flags like --only-failures and --next-failure
