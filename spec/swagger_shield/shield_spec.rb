@@ -6,7 +6,7 @@ RSpec.describe SwaggerShield::Shield do
   let(:swagger_file) { File.join(__dir__, '..', 'fixtures', 'swagger.yml') }
 
   it "does not return an error when a valid object is submitted" do
-    expect(subject.validate('widgets', 'POST', { 'name' => 'foo', 'price' => 19999 }))
+    expect(subject.validate('widgets', 'POST', { name: 'foo', price: 19999 }))
       .to eq([])
   end
 
@@ -16,5 +16,10 @@ RSpec.describe SwaggerShield::Shield do
         "The property '#/' did not contain a required property of 'name'",
         "The property '#/' did not contain a required property of 'price'"
       ])
+  end
+
+  it "returns an error when objects are submitted with improperly typed keys" do
+    expect(subject.validate('widgets', 'POST', { name: 'foo', price: '19999' }))
+      .to eq(["The property '#/price' of type String did not match the following type: integer"])
   end
 end
