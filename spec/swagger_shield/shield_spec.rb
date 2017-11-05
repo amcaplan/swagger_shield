@@ -22,4 +22,9 @@ RSpec.describe SwaggerShield::Shield do
     expect(subject.validate('widgets', 'POST', { name: 'foo', price: '19999' }))
       .to eq(["The property '#/price' of type String did not match the following type: integer"])
   end
+
+  it "returns an error when objects are submitted with improperly formatted keys" do
+    expect(subject.validate('widgets', 'POST', { name: 'foo', price: 19999, created_at: 'not a date' }))
+      .to eq(["The property '#/created_at' must be a valid RFC3339 date/time string"])
+  end
 end
