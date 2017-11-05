@@ -121,6 +121,13 @@ paths:
       - "application/json"
       produces:
       - "application/json"
+      parameters:
+      - in: "path"
+        name: "id"
+        description: "ID of Widget to see"
+        required: true
+        type: "integer"
+        format: "int64"
       responses:
         200:
           description: "Fetched the Widget!"

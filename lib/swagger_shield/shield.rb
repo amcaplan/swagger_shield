@@ -7,7 +7,12 @@ module SwaggerShield
     end
 
     def validate(path, method, params)
-      errors = JSON::Validator.fully_validate(swagger_spec, params, fragment: "#/buffer/inputs/#{path}/#{method}")
+      subbed_path = path.gsub('/', '\\')
+      errors = JSON::Validator.fully_validate(
+        swagger_spec,
+        params,
+        fragment: "#/buffer/inputs/#{subbed_path}/#{method}"
+      )
       errors.map { |error|
         error.match(/(?<message_part>.*) in schema/)[:message_part]
       }
@@ -38,7 +43,7 @@ module SwaggerShield
               path[1..-1]
             else
               path
-            end
+            end.gsub('/','\\')
 
           paths[json_schema_path][method.upcase] = {
             'type' => 'object',
@@ -79,7 +84,9 @@ module SwaggerShield
     end
 
     def param_schema_from(param)
-      param['schema']
+      param.fetch('schema') {
+        param.except('name', 'in', 'required')
+      }
     end
   end
 end
