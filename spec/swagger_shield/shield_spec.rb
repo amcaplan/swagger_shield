@@ -5,26 +5,48 @@ RSpec.describe SwaggerShield::Shield do
   let(:loaded_spec) { YAML.load_file(swagger_file) }
   let(:swagger_file) { File.join(__dir__, '..', 'fixtures', 'swagger.yml') }
 
-  it "does not return an error when a valid object is submitted" do
-    expect(subject.validate('widgets', 'POST', { name: 'foo', price: 19999 }))
-      .to eq([])
+  describe 'validating body params' do
+    let(:validation) { subject.validate('widgets', 'POST', params) }
+
+    context 'Given a valid object is submitted' do
+      let(:params) {{ name: 'foo', price: 19999 }}
+
+      it 'does not return an error' do
+        expect(validation).to eq([])
+      end
+    end
+
+    context 'Given an object is submitted without required keys' do
+      let(:params) {{}}
+
+      it 'returns an Array of error(s)' do
+        expect(validation).to eq([
+          "The property '#/' did not contain a required property of 'name'",
+          "The property '#/' did not contain a required property of 'price'"
+        ])
+      end
+    end
+
+    context 'Given an object is submitted with improperly typed keys' do
+      let(:params) {{ name: 'foo', price: '19999' }}
+
+      it 'returns an Array of error(s)' do
+        expect(validation).to eq([
+          "The property '#/price' of type String did not match the following type: integer"
+        ])
+      end
+    end
+
+    context 'Given an object is submitted with improperly formatted keys' do
+      let(:params) {{ name: 'foo', price: 19999, created_at: 'not a date' }}
+
+      it 'returns an Array of error(s)' do
+        expect(validation).to eq([
+          "The property '#/created_at' must be a valid RFC3339 date/time string"
+        ])
+      end
+    end
   end
 
-  it "returns an error when objects are submitted without required keys" do
-    expect(subject.validate('widgets', 'POST', {}))
-      .to eq([
-        "The property '#/' did not contain a required property of 'name'",
-        "The property '#/' did not contain a required property of 'price'"
-      ])
-  end
-
-  it "returns an error when objects are submitted with improperly typed keys" do
-    expect(subject.validate('widgets', 'POST', { name: 'foo', price: '19999' }))
-      .to eq(["The property '#/price' of type String did not match the following type: integer"])
-  end
-
-  it "returns an error when objects are submitted with improperly formatted keys" do
-    expect(subject.validate('widgets', 'POST', { name: 'foo', price: 19999, created_at: 'not a date' }))
-      .to eq(["The property '#/created_at' must be a valid RFC3339 date/time string"])
   end
 end
