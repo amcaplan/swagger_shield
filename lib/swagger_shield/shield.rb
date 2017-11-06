@@ -1,5 +1,7 @@
 module SwaggerShield
   class Shield
+    include Enumerable
+
     def initialize(swagger_spec)
       @swagger_spec = swagger_spec.deep_dup
       @swagger_spec['buffer'] = {}
@@ -7,45 +9,58 @@ module SwaggerShield
     end
 
     def validate(path, method, params)
-      subbed_path = path.gsub('/', '\\')
+      canonical_path_id = identify_path(path)
+
       errors = JSON::Validator.fully_validate(
         swagger_spec,
         params,
-        fragment: "#/buffer/inputs/#{subbed_path}/#{method}"
+        fragment: "#/buffer/inputs/#{canonical_path_id}/#{method}"
       )
       errors.map { |error|
         error.match(/(?<message_part>.*) in schema/)[:message_part]
       }
     end
 
+    def each
+      return enum_for(__method__) unless block_given?
+
+      paths.each do |path, info|
+        yield path, info
+      end
+    end
+
     private
     attr_reader :swagger_spec
 
     def paths
-      swagger_spec['buffer']['inputs'] ||= Hash.new do |hash, key|
-        hash[key] = {}
-      end
+      swagger_spec['buffer']['inputs'] ||= {}
     end
 
     def load_route_definitions!
       swagger_spec['paths'].each do |path, methods|
-        methods.each do |method, info|
+        path_id_regex = Regexp.new('\A' + path.gsub(/\{\w+\}/, "[^/]+") + '\z')
+        path_info = {
+          'original_path' => path,
+          'regex' => path_id_regex,
+        }
+
+        methods.each do |method, method_info|
           required = []
           properties = {}
 
-          each_param(info['parameters']) do |param|
+          each_param(method_info['parameters']) do |param|
             required << param['name'] if param['required']
             properties[param['name']] = param_schema_from(param)
           end
 
-          json_schema_path = path.gsub('/','\\')
-
-          paths[json_schema_path][method.upcase] = {
+          path_info[method.upcase] = {
             'type' => 'object',
             'required' => required,
             'properties' => properties
           }
         end
+
+        paths[path_id_regex.hash.to_s] = path_info
       end
     end
 
@@ -82,6 +97,12 @@ module SwaggerShield
       param.fetch('schema') {
         param.except('name', 'in', 'required')
       }
+    end
+
+    def identify_path(path)
+      swagger_spec['buffer']['inputs'].find { |_, info|
+        info['regex'].match?(path)
+      }.first
     end
   end
 end

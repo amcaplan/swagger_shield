@@ -69,23 +69,13 @@ RSpec.describe SwaggerShield::Shield do
   end
 
   describe 'validating path params' do
-    let(:validation) { subject.validate('/widgets/{id}', 'GET', params) }
+    let(:validation) { subject.validate('/widgets/1', 'GET', params) }
 
     context 'Given valid params' do
       let(:params) {{ id: 1 }}
 
       it 'does not return an error' do
         expect(validation).to eq([])
-      end
-    end
-
-    context 'Given an object is submitted without required keys' do
-      let(:params) {{}}
-
-      it 'returns an Array of error(s)' do
-        expect(validation).to eq([
-          "The property '#/' did not contain a required property of 'id'"
-        ])
       end
     end
 
@@ -112,11 +102,10 @@ RSpec.describe SwaggerShield::Shield do
     end
 
     context 'Given an object is submitted without required keys' do
-      let(:params) {{}}
+      let(:params) {{ id: 1 }}
 
       it 'returns an Array of error(s) from both sources' do
         expect(validation).to eq([
-          "The property '#/' did not contain a required property of 'id'",
           "The property '#/' did not contain a required property of 'name'",
           "The property '#/' did not contain a required property of 'price'"
         ])
