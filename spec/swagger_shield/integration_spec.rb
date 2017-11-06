@@ -95,6 +95,13 @@ RSpec.describe SwaggerShield::Shield, type: :request do
             multi_type_error(fragment: '#/id', actual_type: 'String'),
           ])
         end
+
+        context 'and validation is being bypassed' do
+          it 'works normally' do
+            get '/widgets/hello?skip_swagger_shield=true'
+            expect(response).to be_ok
+          end
+        end
       end
     end
 

@@ -25,6 +25,10 @@ Widget = Struct.new(:name, :price, :tags, :metadata, :created_at, :updated_at) d
     @id = rand(1_000_000)
   end
 
+  def update(attrs)
+    self
+  end
+
   def save
     # noop
     true
