@@ -1,16 +1,20 @@
 Widget = Struct.new(:name, :price, :tags, :metadata, :created_at, :updated_at) do
+  INSTANCE = new(
+    'A Widget',
+    '1590',
+    %w(foo bar baz widget),
+    { foo: 'bar' },
+    Time.now,
+    Time.now
+  )
+
   class << self
     def all
-      [
-        new(
-          'A Widget',
-          '1590',
-          %w(foo bar baz widget),
-          { foo: 'bar' },
-          Time.now,
-          Time.now
-        )
-      ]
+      [find]
+    end
+
+    def find(*)
+      INSTANCE.dup
     end
   end
 
@@ -23,5 +27,6 @@ Widget = Struct.new(:name, :price, :tags, :metadata, :created_at, :updated_at) d
 
   def save
     # noop
+    true
   end
 end
