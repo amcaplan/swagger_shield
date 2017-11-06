@@ -98,6 +98,8 @@ RSpec.describe SwaggerShield::Shield, type: :request do
 
         context 'and validation is being bypassed' do
           it 'works normally' do
+            # This is not a magic param; it was set up in ApplicationController
+            # in the Rails app fixture.
             get '/widgets/hello?skip_swagger_shield=true'
             expect(response).to be_ok
           end
