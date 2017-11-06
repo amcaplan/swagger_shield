@@ -75,17 +75,13 @@ module SwaggerShield
         if (schema = param['schema'])
           if (ref = schema['$ref'])
             schema = resolve_reference(ref)
-            schema['properties'].each do |name, definition|
-              yield(
-                'name' => name,
-                'schema' => definition,
-                'required' => schema['required'].include?(name)
-              )
-            end
-          else
-            schema.each do |schema_param|
-              yield schema_param
-            end
+          end
+          schema['properties'].each do |name, definition|
+            yield(
+              'name' => name,
+              'schema' => definition,
+              'required' => schema['required'].include?(name)
+            )
           end
         else
           yield param
