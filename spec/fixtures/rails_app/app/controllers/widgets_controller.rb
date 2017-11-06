@@ -18,7 +18,7 @@ class WidgetsController < ApplicationController
     @widget = Widget.new(widget_params)
 
     if @widget.save
-      render json: @widget, status: :created, location: @widget
+      render json: @widget, status: :created
     else
       render json: @widget.errors, status: :unprocessable_entity
     end
@@ -46,6 +46,6 @@ class WidgetsController < ApplicationController
 
     # Only allow a trusted parameter "white list" through.
     def widget_params
-      params.require(:widget).permit(:name, :price, :tags, :metadata)
+      params.permit(:name, :price, :tags, :metadata)
     end
 end

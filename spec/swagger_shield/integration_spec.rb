@@ -23,7 +23,7 @@ RSpec.describe SwaggerShield::Shield, type: :request do
         end
 
         context 'Given a trailing slash' do
-          it 'does the normal thing' do
+          it 'works normally' do
             get '/widgets/'
             expect(response).to be_ok
             expect(subject.first).to include('name', 'price')
@@ -34,10 +34,17 @@ RSpec.describe SwaggerShield::Shield, type: :request do
 
     describe 'with a request body' do
       before do
-        post '/widgets', params: params
+        headers = { "CONTENT_TYPE" => "application/json" }
+        post '/widgets', params: params.to_json, headers: headers
       end
 
       context 'Given valid params' do
+        let(:params) {{ name: 'Special Widget', price: 17888 }}
+
+        it 'works normally' do
+          expect(response).to be_created
+          expect(subject).not_to have_key('errors')
+        end
       end
 
       context 'Given required params are missing' do
