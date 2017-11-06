@@ -101,17 +101,45 @@ RSpec.describe SwaggerShield::Shield, type: :request do
     describe 'and a request body' do
       before do
         headers = { "CONTENT_TYPE" => "application/json" }
-        put '/widgets/1', params: { 'widget' => params }.to_json, headers: headers
+        put "/widgets/#{id}", params: { 'widget' => params }.to_json, headers: headers
       end
 
       context 'Given there are violations' do
-        let(:params) {{ 'name' => 'new name', 'price' => 'same old price' }}
+        context 'in the path' do
+          let(:id) { 'hello' }
+          let(:params) {{ 'name' => 'new name', 'price' => 11599 }}
 
-        it 'does not work normally' do
-          expect(response).to have_http_status(422)
-          expect(subject['errors']).to eq([
-            type_error(fragment: '#/widget/price', type: 'integer', actual_type: 'String')
-          ])
+          it 'does not work normally' do
+            expect(response).to have_http_status(422)
+            expect(subject['errors']).to eq([
+              multi_type_error(fragment: '#/id', actual_type: 'String')
+            ])
+          end
+        end
+
+        context 'in the body' do
+          let(:id) { 1 }
+          let(:params) {{ 'name' => 'new name', 'price' => 'same old price' }}
+
+          it 'does not work normally' do
+            expect(response).to have_http_status(422)
+            expect(subject['errors']).to eq([
+              type_error(fragment: '#/widget/price', type: 'integer', actual_type: 'String')
+            ])
+          end
+        end
+
+        context 'in both' do
+          let(:id) { 'hello' }
+          let(:params) {{ 'name' => 'new name', 'price' => 'same old price' }}
+
+          it 'does not work normally' do
+            expect(response).to have_http_status(422)
+            expect(subject['errors']).to eq([
+              multi_type_error(fragment: '#/id', actual_type: 'String'),
+              type_error(fragment: '#/widget/price', type: 'integer', actual_type: 'String')
+            ])
+          end
         end
       end
     end
