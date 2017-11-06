@@ -60,7 +60,7 @@ RSpec.describe SwaggerShield::Shield do
 
       it 'returns an Array of error(s)' do
         expect(validation).to eq([
-          type_error(path: '#/widget/price', actual_type: 'String', type: 'integer')
+          type_error(path: '#/widget/price', actual_type: 'string', type: 'integer')
         ])
       end
     end
@@ -70,7 +70,7 @@ RSpec.describe SwaggerShield::Shield do
 
       it 'returns an Array of error(s)' do
         expect(validation).to eq([
-          type_error(path: '#/widget/tags/1', actual_type: 'Integer', type: 'string')
+          type_error(path: '#/widget/tags/1', actual_type: 'integer', type: 'string')
         ])
       end
     end
@@ -80,7 +80,7 @@ RSpec.describe SwaggerShield::Shield do
 
       it 'returns an Array of error(s)' do
         expect(validation).to eq([
-          type_error(path: '#/widget/metadata/numericThing', actual_type: 'String', type: 'number')
+          type_error(path: '#/widget/metadata/numericThing', actual_type: 'string', type: 'number')
         ])
       end
     end
@@ -112,7 +112,7 @@ RSpec.describe SwaggerShield::Shield do
 
       it 'returns an Array of error(s)' do
         expect(validation).to eq([
-          multi_type_error(path: '#/id', actual_type: 'String')
+          multi_type_error(path: '#/id', actual_type: 'string')
         ])
       end
     end
@@ -148,9 +148,9 @@ RSpec.describe SwaggerShield::Shield do
 
       it 'returns an Array of all error(s)' do
         expect(validation).to eq([
-          multi_type_error(path: '#/id', actual_type: 'String'),
-          type_error(path: '#/widget/name', actual_type: 'Integer', type: 'string'),
-          type_error(path: '#/widget/price', actual_type: 'String', type: 'integer')
+          multi_type_error(path: '#/id', actual_type: 'string'),
+          type_error(path: '#/widget/name', actual_type: 'integer', type: 'string'),
+          type_error(path: '#/widget/price', actual_type: 'string', type: 'integer')
         ])
       end
     end

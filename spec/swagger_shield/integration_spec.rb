@@ -92,7 +92,7 @@ RSpec.describe SwaggerShield::Shield, type: :request do
           get '/widgets/hello'
           expect(response).to have_http_status(422)
           expect(subject['errors']).to eq([
-            multi_type_error(fragment: '#/id', actual_type: 'String'),
+            multi_type_error(fragment: '#/id', actual_type: 'string'),
           ])
         end
 
@@ -121,7 +121,7 @@ RSpec.describe SwaggerShield::Shield, type: :request do
           it 'does not work normally' do
             expect(response).to have_http_status(422)
             expect(subject['errors']).to eq([
-              multi_type_error(fragment: '#/id', actual_type: 'String')
+              multi_type_error(fragment: '#/id', actual_type: 'string')
             ])
           end
         end
@@ -133,7 +133,7 @@ RSpec.describe SwaggerShield::Shield, type: :request do
           it 'does not work normally' do
             expect(response).to have_http_status(422)
             expect(subject['errors']).to eq([
-              type_error(fragment: '#/widget/price', type: 'integer', actual_type: 'String')
+              type_error(fragment: '#/widget/price', type: 'integer', actual_type: 'string')
             ])
           end
         end
@@ -145,8 +145,8 @@ RSpec.describe SwaggerShield::Shield, type: :request do
           it 'does not work normally' do
             expect(response).to have_http_status(422)
             expect(subject['errors']).to eq([
-              multi_type_error(fragment: '#/id', actual_type: 'String'),
-              type_error(fragment: '#/widget/price', type: 'integer', actual_type: 'String')
+              multi_type_error(fragment: '#/id', actual_type: 'string'),
+              type_error(fragment: '#/widget/price', type: 'integer', actual_type: 'string')
             ])
           end
         end
