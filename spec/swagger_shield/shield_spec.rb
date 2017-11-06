@@ -5,6 +5,27 @@ RSpec.describe SwaggerShield::Shield do
   let(:loaded_spec) { YAML.load_file(swagger_file) }
   let(:swagger_file) { File.join(__dir__, '..', 'fixtures', 'swagger.yml') }
 
+  def required_error(path:, property:)
+    {
+      message: "The property '#{path}' did not contain a required property of '#{property}'",
+      fragment: path
+    }
+  end
+
+  def type_error(path:, type:, actual_type:)
+    {
+      message: "The property '#{path}' of type #{actual_type} did not match the following type: #{type}",
+      fragment: path
+    }
+  end
+
+  def format_error(path:, format:)
+    {
+      message: "The property '#{path}' must be a valid #{format} string",
+      fragment: path
+    }
+  end
+
   describe 'validating body params' do
     let(:validation) { subject.validate('/widgets', 'POST', params) }
 
@@ -21,8 +42,8 @@ RSpec.describe SwaggerShield::Shield do
 
       it 'returns an Array of error(s)' do
         expect(validation).to eq([
-          "The property '#/' did not contain a required property of 'name'",
-          "The property '#/' did not contain a required property of 'price'"
+          required_error(path: '#/', property: 'name'),
+          required_error(path: '#/', property: 'price')
         ])
       end
     end
@@ -32,7 +53,7 @@ RSpec.describe SwaggerShield::Shield do
 
       it 'returns an Array of error(s)' do
         expect(validation).to eq([
-          "The property '#/price' of type String did not match the following type: integer"
+          type_error(path: '#/price', actual_type: 'String', type: 'integer')
         ])
       end
     end
@@ -42,7 +63,7 @@ RSpec.describe SwaggerShield::Shield do
 
       it 'returns an Array of error(s)' do
         expect(validation).to eq([
-          "The property '#/tags/1' of type Integer did not match the following type: string"
+          type_error(path: '#/tags/1', actual_type: 'Integer', type: 'string')
         ])
       end
     end
@@ -52,7 +73,7 @@ RSpec.describe SwaggerShield::Shield do
 
       it 'returns an Array of error(s)' do
         expect(validation).to eq([
-          "The property '#/metadata/numericThing' of type String did not match the following type: number"
+          type_error(path: '#/metadata/numericThing', actual_type: 'String', type: 'number')
         ])
       end
     end
@@ -62,7 +83,7 @@ RSpec.describe SwaggerShield::Shield do
 
       it 'returns an Array of error(s)' do
         expect(validation).to eq([
-          "The property '#/created_at' must be a valid RFC3339 date/time string"
+          format_error(path: '#/created_at', format: 'RFC3339 date/time')
         ])
       end
     end
@@ -84,7 +105,7 @@ RSpec.describe SwaggerShield::Shield do
 
       it 'returns an Array of error(s)' do
         expect(validation).to eq([
-          "The property '#/id' of type String did not match the following type: integer"
+          type_error(path: '#/id', actual_type: 'String', type: 'integer')
         ])
       end
     end
@@ -106,8 +127,8 @@ RSpec.describe SwaggerShield::Shield do
 
       it 'returns an Array of error(s) from both sources' do
         expect(validation).to eq([
-          "The property '#/' did not contain a required property of 'name'",
-          "The property '#/' did not contain a required property of 'price'"
+          required_error(path: '#/', property: 'name'),
+          required_error(path: '#/', property: 'price')
         ])
       end
     end
@@ -117,9 +138,9 @@ RSpec.describe SwaggerShield::Shield do
 
       it 'returns an Array of all error(s)' do
         expect(validation).to eq([
-          "The property '#/id' of type String did not match the following type: integer",
-          "The property '#/name' of type Integer did not match the following type: string",
-          "The property '#/price' of type String did not match the following type: integer"
+          type_error(path: '#/id', actual_type: 'String', type: 'integer'),
+          type_error(path: '#/name', actual_type: 'Integer', type: 'string'),
+          type_error(path: '#/price', actual_type: 'String', type: 'integer')
         ])
       end
     end

@@ -5,8 +5,7 @@ class ApplicationController < ActionController::API
     errors = swagger_shield.validate(
       request.path,
       request.method,
-      params.to_unsafe_h,
-      errors_as_objects: true
+      params.to_unsafe_h
     )
 
     unless errors.empty?
