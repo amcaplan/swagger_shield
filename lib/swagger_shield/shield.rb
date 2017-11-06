@@ -8,17 +8,27 @@ module SwaggerShield
       load_route_definitions!
     end
 
-    def validate(path, method, params)
+    def validate(path, method, params, errors_as_objects: false)
       canonical_path_id = identify_path(path)
 
       errors = JSON::Validator.fully_validate(
         swagger_spec,
         params,
-        fragment: "#/buffer/inputs/#{canonical_path_id}/#{method}"
+        fragment: "#/buffer/inputs/#{canonical_path_id}/#{method}",
+        errors_as_objects: errors_as_objects
       )
-      errors.map { |error|
-        error.match(/(?<message_part>.*) in schema/)[:message_part]
-      }
+      if errors_as_objects
+        errors.map { |error|
+          {
+            message: error[:message].match(/(?<message_part>.*) in schema/)[:message_part],
+            fragment: error[:fragment]
+          }
+        }
+      else
+        errors.map { |error|
+          error.match(/(?<message_part>.*) in schema/)[:message_part]
+        }
+      end
     end
 
     def each

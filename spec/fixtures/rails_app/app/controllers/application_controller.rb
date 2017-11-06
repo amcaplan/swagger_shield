@@ -2,7 +2,23 @@ class ApplicationController < ActionController::API
   before_action :shield!
 
   def shield!
-    swagger_shield.validate(request.path, request.method, params)
+    errors = swagger_shield.validate(
+      request.path,
+      request.method,
+      params.to_unsafe_h,
+      errors_as_objects: true
+    )
+
+    unless errors.empty?
+      formatted = errors.map { |error|
+        {
+          status: '422',
+          detail: error[:message],
+          source: { pointer: error[:fragment] }
+        }
+      }
+      render json: { errors: formatted }, status: :unprocessable_entity
+    end
   end
 
   def swagger_shield
