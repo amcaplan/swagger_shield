@@ -9,12 +9,12 @@ module SwaggerShield
     end
 
     def validate(path, method, params)
-      canonical_path_id = identify_path(path)
+      canonical_path_id = identify_path(path, paths[method])
 
       JSON::Validator.fully_validate(
         swagger_spec,
         params,
-        fragment: "#/buffer/inputs/#{canonical_path_id}/#{method}",
+        fragment: "#/route_lookups/#{method}/#{canonical_path_id}/schema",
         errors_as_objects: true
       ).map { |error|
         {
@@ -36,7 +36,9 @@ module SwaggerShield
     attr_reader :swagger_spec
 
     def paths
-      swagger_spec['buffer']['inputs'] ||= {}
+      swagger_spec['route_lookups'] ||= Hash.new do |h, k|
+        h[k] = {}
+      end
     end
 
     def load_route_definitions!
@@ -56,14 +58,15 @@ module SwaggerShield
             properties[param['name']] = param_schema_from(param)
           end
 
-          path_info[method.upcase] = {
-            'type' => 'object',
-            'required' => required,
-            'properties' => properties
+          paths[method.upcase][path_id_regex.hash.to_s] = {
+            'regex' => path_id_regex,
+            'schema' => {
+              'type' => 'object',
+              'required' => required,
+              'properties' => properties
+            }
           }
         end
-
-        paths[path_id_regex.hash.to_s] = path_info
       end
     end
 
@@ -102,10 +105,8 @@ module SwaggerShield
       }
     end
 
-    def identify_path(path)
-      swagger_spec['buffer']['inputs'].find { |_, info|
-        info['regex'].match?(path)
-      }.first
+    def identify_path(path, paths)
+      paths.find { |_, info| info['regex'].match?(path) }.first
     end
   end
 end
