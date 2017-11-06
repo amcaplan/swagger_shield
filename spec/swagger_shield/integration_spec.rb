@@ -11,6 +11,14 @@ RSpec.describe SwaggerShield::Shield, type: :request do
     }
   end
 
+  def type_error(fragment:, type:, actual_type:)
+    {
+      'status' => '422',
+      'detail' => "The property '#{fragment}' of type #{actual_type} did not match the following type: #{type}",
+      'source' => { 'pointer' => fragment }
+    }
+  end
+
   def multi_type_error(fragment:, actual_type:)
     {
       'status' => '422',
@@ -43,7 +51,7 @@ RSpec.describe SwaggerShield::Shield, type: :request do
     describe 'with a request body' do
       before do
         headers = { "CONTENT_TYPE" => "application/json" }
-        post '/widgets', params: params.to_json, headers: headers
+        post '/widgets', params: { 'widget' => params }.to_json, headers: headers
       end
 
       context 'Given valid params' do
@@ -61,8 +69,8 @@ RSpec.describe SwaggerShield::Shield, type: :request do
         it 'does not work normally' do
           expect(response).to have_http_status(422)
           expect(subject['errors']).to eq([
-            required_error(fragment: '#/', required: 'name'),
-            required_error(fragment: '#/', required: 'price')
+            required_error(fragment: '#/widget', required: 'name'),
+            required_error(fragment: '#/widget', required: 'price')
           ])
         end
       end
@@ -90,7 +98,22 @@ RSpec.describe SwaggerShield::Shield, type: :request do
       end
     end
 
-    describe 'with a request body' do
+    describe 'and a request body' do
+      before do
+        headers = { "CONTENT_TYPE" => "application/json" }
+        put '/widgets/1', params: { 'widget' => params }.to_json, headers: headers
+      end
+
+      context 'Given there are violations' do
+        let(:params) {{ 'name' => 'new name', 'price' => 'same old price' }}
+
+        it 'does not work normally' do
+          expect(response).to have_http_status(422)
+          expect(subject['errors']).to eq([
+            type_error(fragment: '#/widget/price', type: 'integer', actual_type: 'String')
+          ])
+        end
+      end
     end
   end
 end

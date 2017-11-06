@@ -34,7 +34,7 @@ RSpec.describe SwaggerShield::Shield do
   end
 
   describe 'validating body params' do
-    let(:validation) { subject.validate('/widgets', 'POST', params) }
+    let(:validation) { subject.validate('/widgets', 'POST', widget: params) }
 
     context 'Given a valid object is submitted' do
       let(:params) {{ name: 'foo', price: 19999 }}
@@ -49,8 +49,8 @@ RSpec.describe SwaggerShield::Shield do
 
       it 'returns an Array of error(s)' do
         expect(validation).to eq([
-          required_error(path: '#/', property: 'name'),
-          required_error(path: '#/', property: 'price')
+          required_error(path: '#/widget', property: 'name'),
+          required_error(path: '#/widget', property: 'price')
         ])
       end
     end
@@ -60,7 +60,7 @@ RSpec.describe SwaggerShield::Shield do
 
       it 'returns an Array of error(s)' do
         expect(validation).to eq([
-          type_error(path: '#/price', actual_type: 'String', type: 'integer')
+          type_error(path: '#/widget/price', actual_type: 'String', type: 'integer')
         ])
       end
     end
@@ -70,7 +70,7 @@ RSpec.describe SwaggerShield::Shield do
 
       it 'returns an Array of error(s)' do
         expect(validation).to eq([
-          type_error(path: '#/tags/1', actual_type: 'Integer', type: 'string')
+          type_error(path: '#/widget/tags/1', actual_type: 'Integer', type: 'string')
         ])
       end
     end
@@ -80,7 +80,7 @@ RSpec.describe SwaggerShield::Shield do
 
       it 'returns an Array of error(s)' do
         expect(validation).to eq([
-          type_error(path: '#/metadata/numericThing', actual_type: 'String', type: 'number')
+          type_error(path: '#/widget/metadata/numericThing', actual_type: 'String', type: 'number')
         ])
       end
     end
@@ -90,7 +90,7 @@ RSpec.describe SwaggerShield::Shield do
 
       it 'returns an Array of error(s)' do
         expect(validation).to eq([
-          format_error(path: '#/created_at', format: 'RFC3339 date/time')
+          format_error(path: '#/widget/created_at', format: 'RFC3339 date/time')
         ])
       end
     end
@@ -119,10 +119,11 @@ RSpec.describe SwaggerShield::Shield do
   end
 
   describe 'validating path and body params together' do
-    let(:validation) { subject.validate('/widgets/{id}', 'PUT', params) }
+    let(:validation) { subject.validate('/widgets/{id}', 'PUT', id: id, widget: params) }
 
     context 'Given valid params' do
-      let(:params) {{ id: 1, name: 'bar', price: 17999 }}
+      let(:id) { 1 }
+      let(:params) {{ name: 'bar', price: 17999 }}
 
       it 'does not return an error' do
         expect(validation).to eq([])
@@ -130,24 +131,26 @@ RSpec.describe SwaggerShield::Shield do
     end
 
     context 'Given an object is submitted without required keys' do
-      let(:params) {{ id: 1 }}
+      let(:id) { 1 }
+      let(:params) {{}}
 
       it 'returns an Array of error(s) from both sources' do
         expect(validation).to eq([
-          required_error(path: '#/', property: 'name'),
-          required_error(path: '#/', property: 'price')
+          required_error(path: '#/widget', property: 'name'),
+          required_error(path: '#/widget', property: 'price')
         ])
       end
     end
 
     context 'Given an object is submitted with improperly typed keys' do
-      let(:params) {{ id: 'string not numeric', name: 12345, price: 'what is up here' }}
+      let(:id) { 'string not numeric' }
+      let(:params) {{ name: 12345, price: 'what is up here' }}
 
       it 'returns an Array of all error(s)' do
         expect(validation).to eq([
-          type_error(path: '#/id', actual_type: 'String', type: 'integer'),
-          type_error(path: '#/name', actual_type: 'Integer', type: 'string'),
-          type_error(path: '#/price', actual_type: 'String', type: 'integer')
+          multi_type_error(path: '#/id', actual_type: 'String'),
+          type_error(path: '#/widget/name', actual_type: 'Integer', type: 'string'),
+          type_error(path: '#/widget/price', actual_type: 'String', type: 'integer')
         ])
       end
     end

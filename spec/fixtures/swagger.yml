@@ -29,7 +29,12 @@ paths:
         description: "Widget object that needs to be added to the store"
         required: true
         schema:
-          $ref: "#/definitions/Widget"
+          type: object
+          required:
+            - widget
+          properties:
+            widget:
+              $ref: "#/definitions/Widget"
       responses:
         201:
           description: "Widget saved!"
@@ -78,7 +83,11 @@ paths:
         description: "Elements of Widget object to update"
         required: true
         schema:
-          $ref: "#/definitions/Widget"
+          required:
+            - widget
+          properties:
+            widget:
+                $ref: "#/definitions/Widget"
       responses:
         200:
           description: "Widget successfully updated!"

@@ -46,6 +46,6 @@ class WidgetsController < ApplicationController
 
     # Only allow a trusted parameter "white list" through.
     def widget_params
-      params.permit(:name, :price, :tags, :metadata)
+      params.require('widget').permit(:name, :price, :tags, :metadata)
     end
 end
