@@ -97,7 +97,23 @@ module SwaggerShield
 
     def param_schema_from(param)
       param.fetch('schema') {
-        param.except('name', 'in', 'required')
+        baseline = param.except('name', 'in', 'required')
+        return baseline unless param['in'] == 'path'
+        case param['type']
+        when 'integer'
+          {
+            'description' => baseline.delete('description'),
+            'anyOf' => [
+              baseline,
+              {
+                'type' => 'string',
+                'pattern' => '\A[0-9]\z'
+              }
+            ]
+          }
+        else
+          baseline
+        end
       }
     end
 

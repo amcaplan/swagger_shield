@@ -19,6 +19,13 @@ RSpec.describe SwaggerShield::Shield do
     }
   end
 
+  def multi_type_error(path:, actual_type:)
+    {
+      message: "The property '#{path}' of type #{actual_type} did not match one or more of the required schemas",
+      fragment: path
+    }
+  end
+
   def format_error(path:, format:)
     {
       message: "The property '#{path}' must be a valid #{format} string",
@@ -105,7 +112,7 @@ RSpec.describe SwaggerShield::Shield do
 
       it 'returns an Array of error(s)' do
         expect(validation).to eq([
-          type_error(path: '#/id', actual_type: 'String', type: 'integer')
+          multi_type_error(path: '#/id', actual_type: 'String')
         ])
       end
     end
