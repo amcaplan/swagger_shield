@@ -24,14 +24,6 @@ module SwaggerShield
       }
     end
 
-    def each
-      return enum_for(__method__) unless block_given?
-
-      paths.each do |path, info|
-        yield path, info
-      end
-    end
-
     private
     attr_reader :swagger_spec
 
