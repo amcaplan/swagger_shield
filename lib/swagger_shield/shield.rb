@@ -42,8 +42,9 @@ module SwaggerShield
     end
 
     def load_route_definitions!
+      base_path = swagger_spec.fetch('basePath', '')
       swagger_spec['paths'].each do |path, methods|
-        path_id_regex = Regexp.new('\A' + path.gsub(/\{\w+\}/, "[^/]+") + '\z')
+        path_id_regex = Regexp.new('\A' + base_path + path.gsub(/\{\w+\}/, "[^/]+") + '\z')
         path_info = {
           'original_path' => path,
           'regex' => path_id_regex,
