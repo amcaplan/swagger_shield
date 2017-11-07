@@ -118,7 +118,7 @@ module SwaggerShield
     end
 
     def identify_path(path, paths)
-      paths.find { |_, info| info['regex'].match?(path) }.first
+      paths.find { |_, info| info['regex'] =~ path }.first
     end
   end
 end
