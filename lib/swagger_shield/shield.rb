@@ -4,7 +4,6 @@ module SwaggerShield
 
     def initialize(swagger_spec)
       @swagger_spec = swagger_spec.deep_dup
-      @swagger_spec['buffer'] = {}
       load_route_definitions!
     end
 
