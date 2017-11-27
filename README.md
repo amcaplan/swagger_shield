@@ -1,8 +1,59 @@
 # SwaggerShield
 
-Welcome to your new gem! In this directory, you'll find the files you need to be able to package up your Ruby library into a gem. Put your Ruby code in the file `lib/swagger_shield`. To experiment with that code, run `bin/console` for an interactive prompt.
+Tired of getting weird errors when users (or your own clients) submit random
+junk to your Rails API?  `SwaggerShield` is here to save the day!
 
-TODO: Delete this and the text above, and describe your gem
+## Usage
+
+```ruby
+# You can add to any controller, or to ApplicationController if you want
+# SwaggerShield to protect your whole app.
+class ApplicationController < ActionController::API
+  SwaggerShield.protect!(
+    self,
+
+    # replace with the location of your actual swagger YAML file:
+    swagger_file: File.join('config', 'swagger.yml'),
+
+    # add on any valid "if" or "unless" conditionals that can be applied to a
+    # Rails before_action
+    if: -> { current_user.test_user? },
+    unless: -> { params[:skip_swagger_shield] }
+  )
+end
+```
+
+Now, everything will work as before, as long as the requests are properly
+formatted.  But if requests don't match your Swagger spec:
+
+![You Shall Not Pass!](https://media.giphy.com/media/njYrp176NQsHS/giphy.gif)
+
+OK, maybe it's not that dramatic.  But your client will see an error pointing to
+exactly what they messed up in the request:
+
+```json
+{
+  "errors": [
+    {
+      "status": "422",
+      "detail": "The property '#/widget/price' of type string did not match the following type: integer",
+      "source": {
+        "pointer": "#/widget/price"
+      }
+    }
+  ]
+}
+```
+
+## Warning!
+
+This project is under active development, being built up in stages as bits
+become necessary for projects that make money.  So there's still plenty of stuff
+to implement; use at your own risk.
+
+That said, the project will gratefully accept the implementation of new types,
+better error messaging, etc., basically anything you find useful in your own
+work which seems generally applicable.  So please [contribute](#development)!
 
 ## Installation
 
@@ -20,19 +71,13 @@ Or install it yourself as:
 
     $ gem install swagger_shield
 
-## Usage
-
-TODO: Write usage instructions here
-
 ## Development
 
 After checking out the repo, run `bin/setup` to install dependencies. Then, run `rake spec` to run the tests. You can also run `bin/console` for an interactive prompt that will allow you to experiment.
 
-To install this gem onto your local machine, run `bundle exec rake install`. To release a new version, update the version number in `version.rb`, and then run `bundle exec rake release`, which will create a git tag for the version, push git commits and tags, and push the `.gem` file to [rubygems.org](https://rubygems.org).
-
 ## Contributing
 
-Bug reports and pull requests are welcome on GitHub at https://github.com/[USERNAME]/swagger_shield. This project is intended to be a safe, welcoming space for collaboration, and contributors are expected to adhere to the [Contributor Covenant](http://contributor-covenant.org) code of conduct.
+Bug reports and pull requests are welcome on GitHub at https://github.com/amcaplan/swagger_shield. This project is intended to be a safe, welcoming space for collaboration, and contributors are expected to adhere to the [Contributor Covenant](http://contributor-covenant.org) code of conduct.
 
 ## License
 
@@ -40,4 +85,4 @@ The gem is available as open source under the terms of the [MIT License](http://
 
 ## Code of Conduct
 
-Everyone interacting in the SwaggerShield project’s codebases, issue trackers, chat rooms and mailing lists is expected to follow the [code of conduct](https://github.com/[USERNAME]/swagger_shield/blob/master/CODE_OF_CONDUCT.md).
+Everyone interacting in the SwaggerShield project’s codebases, issue trackers, chat rooms and mailing lists is expected to follow the [code of conduct](https://github.com/amcaplan/swagger_shield/blob/master/CODE_OF_CONDUCT.md).
