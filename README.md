@@ -45,6 +45,9 @@ exactly what they messed up in the request:
 }
 ```
 
+(Only errors in JSON API format are supported, hopefully that'll be updated
+soon...)
+
 ## Warning!
 
 This project is under active development, being built up in stages as bits
