@@ -26,7 +26,7 @@ end
 Now, everything will work as before, as long as the requests are properly
 formatted.  But if requests don't match your Swagger spec:
 
-![You Shall Not Pass!](https://media.giphy.com/media/njYrp176NQsHS/giphy.gif)
+![You Shall Not Pass!](https://i0.wp.com/gifrific.com/wp-content/uploads/2017/11/you-shall-not-pass-gandalf-lotr.gif)
 
 OK, maybe it's not that dramatic.  But your client will see an error pointing to
 exactly what they messed up in the request:
