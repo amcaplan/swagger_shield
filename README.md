@@ -1,3 +1,5 @@
+[![Gem Version](https://badge.fury.io/rb/swagger_shield.svg)](https://badge.fury.io/rb/swagger_shield)
+
 # SwaggerShield
 
 Tired of getting weird errors when users (or your own clients) submit random
