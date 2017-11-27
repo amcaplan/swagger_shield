@@ -1,3 +1,4 @@
+[![Build Status](https://travis-ci.org/amcaplan/swagger_shield.svg?branch=master)](https://travis-ci.org/amcaplan/swagger_shield)
 [![Gem Version](https://badge.fury.io/rb/swagger_shield.svg)](https://badge.fury.io/rb/swagger_shield)
 
 # SwaggerShield
