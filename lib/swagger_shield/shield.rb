@@ -1,7 +1,5 @@
 module SwaggerShield
   class Shield
-    include Enumerable
-
     def initialize(swagger_spec)
       @swagger_spec = swagger_spec.deep_dup
       load_route_definitions!
