@@ -100,7 +100,7 @@ RSpec.describe SwaggerShield::Shield do
     let(:validation) { subject.validate('/widgets/1', 'GET', params) }
 
     context 'Given valid params' do
-      let(:params) {{ id: 1 }}
+      let(:params) {{ id: '10' }}
 
       it 'does not return an error' do
         expect(validation).to eq([])
@@ -122,7 +122,7 @@ RSpec.describe SwaggerShield::Shield do
     let(:validation) { subject.validate('/widgets/{id}', 'PUT', id: id, widget: params) }
 
     context 'Given valid params' do
-      let(:id) { 1 }
+      let(:id) { '10' }
       let(:params) {{ name: 'bar', price: 17999 }}
 
       it 'does not return an error' do

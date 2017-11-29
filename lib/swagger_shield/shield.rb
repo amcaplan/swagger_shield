@@ -97,7 +97,7 @@ module SwaggerShield
               baseline,
               {
                 'type' => 'string',
-                'pattern' => '\A[0-9]\z'
+                'pattern' => '\A\d+\z'
               }
             ]
           }
