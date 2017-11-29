@@ -10,7 +10,7 @@ Gem::Specification.new do |spec|
   spec.email         = ["arielmcaplan@gmail.com"]
 
   spec.summary       = %q{Protect your API from malformed requests with Swagger Shield!}
-  spec.description   = %q{Validates requests to your API against your Swagger spec.}
+  spec.description   = %q{Validates requests to your Rails API against your Swagger spec.}
   spec.homepage      = "https://github.com/amcaplan/swagger_shield"
   spec.license       = "MIT"
 
